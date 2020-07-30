@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">sKlub</string>
+    <string name="btn_first">first</string>
+    <string name="btn_log_in">Log In</string>
+    <string name="testEmail">sominiclip@gmail.com</string>
+    <string name="testPassword">123456</string>
+    <string name="btn_sign_out">Sign Out</string>
+    <string name="tv_login">Login</string>
+    <string name="et_user_name_placeholder">User name</string>
+    <string name="et_user_surname_placeholder">User surname</string>
+</resources>

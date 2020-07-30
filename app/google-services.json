@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1017049528802",
+    "firebase_url": "https://sklub-9a757.firebaseio.com",
+    "project_id": "sklub-9a757",
+    "storage_bucket": "sklub-9a757.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1017049528802:android:b7b9fbeeb2ab6e29c3e1bb",
+        "android_client_info": {
+          "package_name": "com.stefan.sklub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1017049528802-vdii9g7f5v5rohrfbkvobbv9u37kojco.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.stefan.sklub",
+            "certificate_hash": "4cda7a2dbd0d5cad2c6d171505c07f11d6a6365c"
+          }
+        },
+        {
+          "client_id": "1017049528802-ri671iu8mdqrlomtqash77hied95ar4b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMsRjGZMBHEPvCN-de2I3LwUeEihnurQ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1017049528802-ri671iu8mdqrlomtqash77hied95ar4b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
