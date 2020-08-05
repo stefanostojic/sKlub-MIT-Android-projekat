@@ -1,4 +1,4 @@
-package com.stefan.sklub;
+package com.stefan.sklub.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -16,8 +15,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.stefan.sklub.R;
 
-public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class LoginActivity extends AppCompatActivity {
 
     String TAG = "ispis";
     private FirebaseAuth mAuth;
@@ -34,8 +37,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mEmailField = findViewById(R.id.fieldEmail);
         mPasswordField = findViewById(R.id.fieldPassword);
 
-        // Buttons
-        findViewById(R.id.btnLogin).setOnClickListener(this);
+//        // Buttons
+//        findViewById(R.id.btnLogin).setOnClickListener(this);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -46,7 +49,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onStart();
         getSupportActionBar().hide();
 
-        // Check if user is signed in (non-null) and update UI accordingly.
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             Log.i(TAG, "korisnik je vec ulogovan :)");
@@ -59,7 +61,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void signIn(String email, String password) {
-        if (email == null || email == "" || password == null || password == "") {
+        if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "popuni polja pls", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -72,33 +74,29 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
-                    // Sign in success, update UI with the signed-in user's information
                     Log.i(TAG, "signInWithEmail:successs");
                     FirebaseUser user = mAuth.getCurrentUser();
                     Intent continueToMainActivityIntent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(continueToMainActivityIntent);
                     finish();
                 } else {
-                    // If sign in fails, display a message to the user.
                     Log.i(TAG, "signInWithEmail:failure", task.getException());
                     Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-//                    updateUI(null);
                 }
-
-                // ...
             }
         });
     }
 
-    @Override
-    public void onClick(View v) {
+    public void onBtnLoginClick(View v) {
         int i = v.getId();
         if (i == R.id.btnLogin) {
             signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
         }
-//        else if (i == R.id.emailSignInButton) {
-//            signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
-//        }
+    }
+
+    public void onBtnRegisterClick(View view) {
+        Intent registerActivityIntent = new Intent(LoginActivity.this, RegisterActivity.class);
+        startActivity(registerActivityIntent);
     }
 
     @Override

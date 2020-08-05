@@ -14,42 +14,171 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout4"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="200dp"
+    android:layout_marginVertical="4dp"
+    android:layout_marginBottom="8dp">
 
-    <!--This TextView holds the weather data for one particular day in the forecast-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/app_name"
-            tools:srcCompat="@drawable/common_full_open_on_phone" />
+    <ImageView
+        android:id="@+id/iv_event"
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        tools:srcCompat="@drawable/sample32" />
 
-        <TextView
-            android:id="@+id/tv_event_data"
-            android:layout_weight="1"
-            style="@style/TextAppearance.AppCompat.Large"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="16dp" />
-    </LinearLayout>
 
     <!--This View serves as a visual divider between list items-->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#dadada"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/gradient_overlay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/gradient_overlay" />
+
+    <ImageView
+        android:id="@+id/iv_event_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/volleyball_256" />
+
+    <TextView
+        android:id="@+id/tv_event_name"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="146dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/poppins_bold"
+        android:maxLines="2"
+        android:text="Naziv događaja"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_event_icon"
+        app:layout_constraintStart_toEndOf="@+id/iv_event_icon"
+        app:layout_constraintTop_toTopOf="@+id/iv_event_icon"
+        app:lineHeight="20sp" />
+
+    <ImageView
+        android:id="@+id/iv_organiser"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/iv_event_icon"
+        app:layout_constraintTop_toBottomOf="@+id/iv_event_icon"
+        tools:srcCompat="@drawable/ic_person_black_18dp" />
+
+    <TextView
+        android:id="@+id/tv_organiser_firstname"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/poppins_bold"
+        android:maxLines="1"
+        android:text="Ime organizatora"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/iv_organiser"
+        app:layout_constraintTop_toTopOf="@+id/iv_organiser"
+        app:lineHeight="12sp" />
+
+    <TextView
+        android:id="@+id/tv_organiser_lastname"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:fontFamily="@font/poppins_regular"
+        android:maxLines="1"
+        android:text="Prezime organizatora"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_organiser_firstname"
+        app:layout_constraintTop_toTopOf="@+id/tv_organiser_firstname"
+        app:lineHeight="10sp" />
+
+    <ImageView
+        android:id="@+id/iv_time_icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/iv_organiser"
+        app:layout_constraintTop_toBottomOf="@+id/iv_organiser"
+        app:srcCompat="@drawable/ic_access_time_white_18dp" />
+
+    <TextView
+        android:id="@+id/tv_time"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="Vreme"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/iv_time_icon"
+        app:layout_constraintTop_toTopOf="@+id/iv_time_icon" />
+
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_regular"
+        android:text="Datum"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_time_icon"
+        app:layout_constraintStart_toStartOf="@+id/tv_time" />
+
+<!--    <ImageView-->
+<!--        android:id="@+id/iv_place_icon"-->
+<!--        android:layout_width="32dp"-->
+<!--        android:layout_height="32dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/iv_time_icon"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/iv_time_icon"-->
+<!--        tools:srcCompat="@drawable/ic_access_time_white_18dp" />-->
+
+    <TextView
+        android:id="@+id/tv_place"
+        style="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="144dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_regular"
+        android:maxLines="2"
+        android:text="Mesto događaja"
+        android:textColor="#FFFFFF"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageView"
+        app:layout_constraintStart_toStartOf="@+id/tv_date"
+        app:layout_constraintTop_toTopOf="@+id/imageView"
+        app:lineHeight="10sp" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/iv_time_icon"
+        app:layout_constraintTop_toBottomOf="@+id/iv_time_icon"
+        app:srcCompat="@drawable/ic_place_white_18dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

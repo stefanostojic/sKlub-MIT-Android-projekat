@@ -8,4 +8,7 @@
     <string name="tv_login">Login</string>
     <string name="et_user_name_placeholder">User name</string>
     <string name="et_user_surname_placeholder">User surname</string>
+    <string name="btn_upload_img">Upload image</string>
+    <string name="btn_add_event">Add Event</string>
+    <string name="btn_register">Register</string>
 </resources>
