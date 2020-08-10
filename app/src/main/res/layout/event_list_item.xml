@@ -21,7 +21,7 @@
     android:layout_width="match_parent"
     android:layout_height="200dp"
     android:layout_marginVertical="4dp"
-    android:layout_marginBottom="8dp">
+    android:layout_marginBottom="4dp">
 
 
     <ImageView
@@ -68,7 +68,7 @@
         android:layout_marginStart="8dp"
         android:fontFamily="@font/poppins_bold"
         android:maxLines="2"
-        android:text="Naziv događaja"
+        android:text="@string/hint_event_name"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_event_icon"
@@ -83,7 +83,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="@+id/iv_event_icon"
         app:layout_constraintTop_toBottomOf="@+id/iv_event_icon"
-        tools:srcCompat="@drawable/ic_person_black_18dp" />
+        tools:srcCompat="@drawable/ic_person_white_18dp" />
 
     <TextView
         android:id="@+id/tv_organiser_firstname"
@@ -93,12 +93,12 @@
         android:layout_marginStart="8dp"
         android:fontFamily="@font/poppins_bold"
         android:maxLines="1"
-        android:text="Ime organizatora"
+        android:text="@string/hint_firstname"
         android:textColor="#FFFFFF"
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/iv_organiser"
         app:layout_constraintTop_toTopOf="@+id/iv_organiser"
-        app:lineHeight="12sp" />
+        app:lineHeight="14sp" />
 
     <TextView
         android:id="@+id/tv_organiser_lastname"
@@ -108,9 +108,9 @@
         android:layout_marginTop="14dp"
         android:fontFamily="@font/poppins_regular"
         android:maxLines="1"
-        android:text="Prezime organizatora"
+        android:text="@string/hint_lastname"
         android:textColor="#FFFFFF"
-        android:textSize="10sp"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@+id/tv_organiser_firstname"
         app:layout_constraintTop_toTopOf="@+id/tv_organiser_firstname"
         app:lineHeight="10sp" />
@@ -131,9 +131,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:fontFamily="@font/poppins_bold"
-        android:text="Vreme"
+        android:text="@string/hint_time"
         android:textColor="#FFFFFF"
-        android:textSize="12sp"
+        android:textSize="14sp"
         app:layout_constraintStart_toEndOf="@+id/iv_time_icon"
         app:layout_constraintTop_toTopOf="@+id/iv_time_icon" />
 
@@ -141,21 +141,22 @@
         android:id="@+id/tv_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
         android:fontFamily="@font/poppins_regular"
-        android:text="Datum"
+        android:text="@string/hint_date"
         android:textColor="#FFFFFF"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_time_icon"
-        app:layout_constraintStart_toStartOf="@+id/tv_time" />
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_time"
+        app:layout_constraintTop_toTopOf="@+id/tv_time" />
 
-<!--    <ImageView-->
-<!--        android:id="@+id/iv_place_icon"-->
-<!--        android:layout_width="32dp"-->
-<!--        android:layout_height="32dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        app:layout_constraintStart_toStartOf="@+id/iv_time_icon"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/iv_time_icon"-->
-<!--        tools:srcCompat="@drawable/ic_access_time_white_18dp" />-->
+    <!--    <ImageView-->
+    <!--        android:id="@+id/iv_place_icon"-->
+    <!--        android:layout_width="32dp"-->
+    <!--        android:layout_height="32dp"-->
+    <!--        android:layout_marginTop="8dp"-->
+    <!--        app:layout_constraintStart_toStartOf="@+id/iv_time_icon"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/iv_time_icon"-->
+    <!--        tools:srcCompat="@drawable/ic_access_time_white_18dp" />-->
 
     <TextView
         android:id="@+id/tv_place"
@@ -164,9 +165,9 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_regular"
         android:maxLines="2"
-        android:text="Mesto događaja"
+        android:text="@string/hint_place_name"
         android:textColor="#FFFFFF"
-        android:textSize="10sp"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView"
         app:layout_constraintStart_toStartOf="@+id/tv_date"
         app:layout_constraintTop_toTopOf="@+id/imageView"

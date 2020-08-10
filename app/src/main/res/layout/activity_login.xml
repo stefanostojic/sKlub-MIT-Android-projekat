@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.LoginActivity">
+    tools:context=".Activities.LoginActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -35,8 +35,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/et_user_name_placeholder"
-            android:importantForAutofill="no"
+            android:hint="@string/hint_email"
+            android:importantForAutofill="yes"
             android:inputType="textEmailAddress"
             android:text="@string/testEmail" />
 
@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/et_user_surname_placeholder"
+            android:hint="@string/hint_lastname"
             android:importantForAutofill="no"
             android:inputType="textPassword"
             android:text="@string/testPassword" />

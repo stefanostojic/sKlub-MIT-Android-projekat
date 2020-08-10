@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.RegisterActivity">
+    tools:context=".Activities.RegisterActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -37,7 +37,7 @@
             android:ems="10"
             android:importantForAutofill="no"
             android:inputType="textEmailAddress"
-            android:hint="Email" />
+            android:hint="Email"  />
 
         <EditText
             android:id="@+id/et_firstname"
@@ -46,7 +46,7 @@
             android:ems="10"
             android:importantForAutofill="no"
             android:inputType="text"
-            android:hint="Firstname" />
+            android:hint="@string/hint_firstname"/>
 
         <EditText
             android:id="@+id/et_lastname"
@@ -55,7 +55,7 @@
             android:ems="10"
             android:importantForAutofill="no"
             android:inputType="text"
-            android:hint="Lastname" />
+            android:hint="@string/hint_lastname"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -65,16 +65,11 @@
                 android:id="@+id/et_birthday"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:editable="false"
+                android:inputType="none"
                 android:ems="10"
-                android:hint="Birthday"
+                android:hint="@string/hint_birthday"
                 android:onClick="showDatePickerDialog" />
 
-<!--            <Button-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:onClick="showDatePickerDialog"-->
-<!--                android:text="Pick date" />-->
         </LinearLayout>
 
         <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
@@ -99,16 +94,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Password"
+            android:hint="@string/hint_password"
             android:importantForAutofill="no"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/et_repeatpassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Repeat password"
+            android:hint="@string/hint_repeat_password"
             android:importantForAutofill="no"
             android:inputType="textPassword"/>
 
