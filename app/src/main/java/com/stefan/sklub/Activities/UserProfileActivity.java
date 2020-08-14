@@ -1,26 +1,27 @@
 package com.stefan.sklub.Activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.stefan.sklub.Database.FirestoreDB;
-import com.stefan.sklub.Model.User;
 import com.stefan.sklub.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class UserProfileActivity extends AppCompatActivity {
+public class UserProfileActivity extends BaseActivity {
 
+    private static final String TAG = "UserProfileActivity ispis";
     private FirebaseAuth mAuth;
-    private FirestoreDB firestoreDB;
+    private FirestoreDB db;
+    String userUid;
+    boolean isMyProfile;
 
     @BindView(R.id.iv_img)
     ImageView iv_img;
@@ -40,23 +41,24 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        getSupportActionBar().setTitle("My profile");
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle("My profile");
         ButterKnife.bind(this);
 
+        db = FirestoreDB.getInstance();
         mAuth = FirebaseAuth.getInstance();
-        firestoreDB = FirestoreDB.getInstance();
 
-        Glide.with(this)
-                .load(R.drawable.ic_person_black_18dp)
-                .apply(options)
-                .into(iv_img);
-
-        String userUidToLoad = mAuth.getUid();
         if (getIntent().hasExtra("userUid")) {
-            userUidToLoad = getIntent().getStringExtra("userUid");
+            userUid = getIntent().getStringExtra("userUid");
+            isMyProfile = false;
+        } else {
+            userUid = mAuth.getUid();
+            isMyProfile = true;
         }
 
-        firestoreDB.getUserProfile(userUidToLoad, user -> {
+        Log.i(TAG, "Requesting User data for Uid: " + userUid);
+        db.getUserByUserUid(userUid, user -> {
+            Log.i(TAG, "User data fetched");
 
             Glide.with(this)
                     .load(user.getImgUri())
@@ -65,5 +67,23 @@ public class UserProfileActivity extends AppCompatActivity {
             tv_firstname.setText(user.getFirstname());
             tv_lastname.setText(user.getLastname());
         });
+        // TODO: Fetch the events which are organised by the user
+
+
+        // TODO: Fetch the events which are attended by the user
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (isMyProfile) {
+            getMenuInflater().inflate(R.menu.edit_delete_menu, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.report_menu, menu);
+        }
+        return true;
+    }
+
+    private void loadUsersEvents() {
+//        db.getEventsByUserDocRef()
     }
 }

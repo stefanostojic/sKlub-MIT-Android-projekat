@@ -44,7 +44,7 @@ import com.stefan.sklub.R;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-public class AddPlaceActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapLongClickListener {
+public class AddPlaceActivity extends BaseActivity {
     private final String TAG = "AddPlaceActivity ispis";
 
     private GoogleMap map;
@@ -66,15 +66,23 @@ public class AddPlaceActivity extends AppCompatActivity implements OnMapReadyCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_place);
 
-        getSupportActionBar().setTitle("Add new place");
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle("Add new place");
+        tyl_name = findViewById(R.id.tf_place_name);
+        iv_img = (ImageView) findViewById(R.id.iv_img);
 
         firestoreDB = FirestoreDB.getInstance();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        tyl_name = findViewById(R.id.tf_place_name);
-        iv_img = (ImageView) findViewById(R.id.iv_img);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment_add_place);
-        mapFragment.getMapAsync(this);
+
+        mapFragment.getMapAsync(googleMap -> {
+            this.map = googleMap;
+            map.setOnMapLongClickListener(latLngPoint -> {
+                putLocationMarker(latLngPoint);
+            });
+            moveMapToCurrentLocation();
+        });
     }
 
     @Override
@@ -105,6 +113,7 @@ public class AddPlaceActivity extends AppCompatActivity implements OnMapReadyCal
         imagePicker.start();
     }
 
+    @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
@@ -142,9 +151,7 @@ public class AddPlaceActivity extends AppCompatActivity implements OnMapReadyCal
                     .load(bitmap3)
                     .apply(options)
                     .into(iv_img);
-            return;
         }
-
     }
 
     private void squareCropBitmap(Bitmap bmp1) {
@@ -180,7 +187,6 @@ public class AddPlaceActivity extends AppCompatActivity implements OnMapReadyCal
 
         Place newPlace = new Place();
         newPlace.setName(tyl_name.getEditText().getText().toString());
-//        newPlace.setLocation(map.getCameraPosition().target);
         newPlace.setLocation(selectedLocation);
 
 //        iv_img.setDrawingCacheEnabled(true);
@@ -190,20 +196,13 @@ public class AddPlaceActivity extends AppCompatActivity implements OnMapReadyCal
 //        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         imgBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-//        firestoreDB.addOnAddPlaceListener(this);
         firestoreDB.addPlace(newPlace, baos.toByteArray(), () -> {
             Toast.makeText(this, "Place successfully added", Toast.LENGTH_SHORT).show();
             finish();
         });
     }
 
-    @Override
-    public void onMapReady(GoogleMap map) {
-        Log.d(TAG, "Map ready");
-
-        this.map = map;
-        map.setOnMapLongClickListener(this);
-
+    private void moveMapToCurrentLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(AddPlaceActivity.this, new String[]{ Manifest.permission.ACCESS_FINE_LOCATION }, ACCESS_FINE_LOCATION_REQUEST_CODE);
         } else {
@@ -229,6 +228,12 @@ public class AddPlaceActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
+    private void putLocationMarker(LatLng latLngPoint) {
+        selectedLocation = latLngPoint;
+        map.clear();
+        map.addMarker(new MarkerOptions().position(latLngPoint).title("Selected location")).showInfoWindow();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
@@ -250,11 +255,5 @@ public class AddPlaceActivity extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-    @Override
-    public void onMapLongClick(LatLng point) {
-        selectedLocation = point;
-        map.clear();
-        map.addMarker(new MarkerOptions().position(point).title("Selected location")).showInfoWindow();
-    }
 
 }

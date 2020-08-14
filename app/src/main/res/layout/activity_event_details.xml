@@ -10,41 +10,83 @@
         android:id="@+id/iv_event"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/sample32" />
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/iv_event_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_event"
+        app:layout_constraintEnd_toEndOf="@+id/iv_event"
+        app:layout_constraintStart_toStartOf="@+id/iv_event"
+        app:layout_constraintTop_toTopOf="@+id/iv_event"
+        tools:srcCompat="@drawable/gradient_shape" />
+
+    <ImageView
+        android:id="@+id/iv_event_sport"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="20dp"
+        android:adjustViewBounds="true"
+        android:background="@drawable/sport_icon_background"
+        android:elevation="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.135"
+        app:layout_constraintStart_toStartOf="@+id/iv_event"
+        app:layout_constraintTop_toBottomOf="@+id/iv_event"
+        tools:srcCompat="@drawable/basketball" />
+
+    <ImageView
+        android:id="@+id/iv_event_organiser"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="16dp"
+        android:adjustViewBounds="true"
+        android:elevation="4dp"
+        app:layout_constraintStart_toStartOf="@+id/iv_event_sport"
+        app:layout_constraintTop_toBottomOf="@+id/iv_event_sport"
+        tools:srcCompat="@drawable/ic_person_black_36dp" />
+
+    <TextView
+        android:id="@+id/tv_event_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingLeft="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/placeholder_event_name"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/iv_event_sport"
+        app:layout_constraintTop_toTopOf="@+id/iv_event_sport" />
 
-        <TextView
-            android:id="@+id/tv_event_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Event Name" />
+    <TextView
+        android:id="@+id/tv_event_sport_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/placeholder_event_sport_name"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_event_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_event_name" />
 
-        <TextView
-            android:id="@+id/tv_event_organiser_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Organiser's name" />
+    <TextView
+        android:id="@+id/tv_event_organiser_firstname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/hint_firstname"
+        app:layout_constraintStart_toEndOf="@+id/iv_event_organiser"
+        app:layout_constraintTop_toTopOf="@+id/iv_event_organiser" />
 
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="onBtnAllPeopleClick"
-            android:src="@drawable/round_people_24" />
-
-    </LinearLayout>
-
+    <TextView
+        android:id="@+id/tv_event_organiser_lastname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/hint_lastname"
+        app:layout_constraintStart_toStartOf="@+id/tv_event_organiser_firstname"
+        app:layout_constraintTop_toBottomOf="@+id/tv_event_organiser_firstname" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

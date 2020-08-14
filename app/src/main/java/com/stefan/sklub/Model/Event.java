@@ -2,42 +2,24 @@ package com.stefan.sklub.Model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import com.google.firebase.Timestamp;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Event implements Parcelable, Comparable<Event> {
-    private String eventId;
+    private String eventDocId;
     private String name;
     private User organiser;
     private LocalDateTime date;
     private Place place;
     private String sport;
+    private String description;
 
     public Event() {
         this.organiser = new User();
         this.place = new Place();
-    }
-
-    public Event(String eventId, String name, LocalDateTime date) {
-        this.eventId = eventId;
-        this.name = name;
-        this.date = date;
-    }
-
-    public Event(String eventId, String name, User organiser, LocalDateTime date, Place place) {
-        this(eventId, name, date);
-        this.organiser = organiser;
-        this.place = place;
-    }
-
-    public String documentPath() {
-        return "events/" + eventId;
     }
 
     public int describeContents() {
@@ -45,12 +27,13 @@ public class Event implements Parcelable, Comparable<Event> {
     }
 
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(eventId);
+        out.writeString(eventDocId);
         out.writeString(name);
         out.writeParcelable(organiser, 0);
         out.writeString(date.toString());
         out.writeParcelable(place, 0);
         out.writeString(sport);
+        out.writeString(description);
     }
 
     public static final Parcelable.Creator<Event> CREATOR = new Parcelable.Creator<Event>() {
@@ -64,26 +47,17 @@ public class Event implements Parcelable, Comparable<Event> {
     };
 
     private Event(Parcel in) {
-        eventId = in.readString();
+        eventDocId = in.readString();
         name = in.readString();
         organiser = in.readParcelable(getClass().getClassLoader());
         date = LocalDateTime.parse(in.readString());
         place = in.readParcelable(getClass().getClassLoader());
         sport = in.readString();
-    }
-
-    public Map<String, Object> getMap() {
-        Map<String, Object> newEventMap = new HashMap<String, Object>();
-        newEventMap.put("date", this.getDate());
-        newEventMap.put("name", this.getName());
-        newEventMap.put("organiser", this.getOrganiser().getUserDocId());
-        newEventMap.put("place", this.getPlace().getPlaceDocId());
-        newEventMap.put("sport", this.getSport());
-        return newEventMap;
+        description = in.readString();
     }
 
     public String toString() {
-        return "{ eventId: " + eventId + ", name: " + name + ", organiser: " + organiser + ", date: " + date.toString() + ", place: " + place.toString() + ", sport: " + sport + " }";
+        return "{ eventDocId: " + eventDocId + ", name: " + name + ", organiser: " + organiser + ", date: " + date.toString() + ", place: " + place.toString() + ", sport: " + sport + " }";
     }
 
     @Override
@@ -96,12 +70,12 @@ public class Event implements Parcelable, Comparable<Event> {
             return -1;
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getEventDocId() {
+        return eventDocId;
     }
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    public void setEventDocId(String eventDocId) {
+        this.eventDocId = eventDocId;
     }
 
     public String getName() {
@@ -146,5 +120,13 @@ public class Event implements Parcelable, Comparable<Event> {
 
     public void setSport(String sport) {
         this.sport = sport;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

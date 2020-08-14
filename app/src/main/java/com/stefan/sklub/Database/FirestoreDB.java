@@ -20,34 +20,44 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.stefan.sklub.Adapters.EventAdapter;
+import com.koalap.geofirestore.GeoFire;
+import com.koalap.geofirestore.GeoLocation;
+import com.koalap.geofirestore.GeoQuery;
+import com.koalap.geofirestore.GeoQueryEventListener;
+import com.koalap.geofirestore.LocationCallback;
+import com.stefan.sklub.Interfaces.OnComplete;
+import com.stefan.sklub.Interfaces.OnGetItem;
 import com.stefan.sklub.Model.Event;
 import com.stefan.sklub.Model.Place;
 import com.stefan.sklub.Model.User;
 
-import java.sql.Time;
+//import org.imperiumlabs.geofirestore.GeoFirestore;
+//import org.imperiumlabs.geofirestore.GeoQuery;
+//import org.imperiumlabs.geofirestore.GeoQueryDataEventListener;
+//import org.imperiumlabs.geofirestore.GeoQueryEventListener;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class FirestoreDB {
     private static FirestoreDB instance;
-    final String TAG = "FirestoreDB ispis";
+    private static final String TAG = "FirestoreDB ispis";
     private StorageReference mStorageRef;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
-
-    private EventAdapter mEventAdapter;
+    GeoFire geoFirePlacesRef;
+    GeoFire geoFireUsersRef;
 
     public FirestoreDB() {
         db = FirebaseFirestore.getInstance();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        geoFirePlacesRef = new GeoFire(FirebaseFirestore.getInstance().collection("places"));
+        geoFireUsersRef = new GeoFire(FirebaseFirestore.getInstance().collection("users"));
     }
 
     public static FirestoreDB getInstance(){
@@ -56,6 +66,16 @@ public class FirestoreDB {
         }
         return instance;
     }
+
+//    @Override
+//    public void addEvent(Event event) {
+//
+//    }
+//
+//    @Override
+//    public void getEvents(OnComplete<Event> callback) {
+//
+//    }
 
     // Interfaces
 
@@ -86,7 +106,7 @@ public class FirestoreDB {
     }
 
     public interface OnGetPlacesListener {
-        void onGetPlaces(List<Place> places);
+        void onGetPlaces(Place place);
     }
 
     // Interfaces: User
@@ -111,8 +131,15 @@ public class FirestoreDB {
 
     public void addEvent(Event event, OnAddEventListener callback) {
 
+        Map<String, Object> newEventMap = new HashMap<String, Object>();
+        newEventMap.put("date", localDateTimeToTimestamp(event.getDate()));
+        newEventMap.put("name", event.getName());
+        newEventMap.put("organiser", db.document("users/" + event.getPlace().getPlaceDocId()));
+        newEventMap.put("place", db.document("places/" + event.getPlace().getPlaceDocId()));
+        newEventMap.put("sport", event.getSport());
+
         db.collection("events")
-                .add(getEventMap(event))
+                .add(newEventMap)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
@@ -128,7 +155,7 @@ public class FirestoreDB {
                 });
     }
 
-    public void getEvents(OnGetEventListener onGetEventListener) {
+    public void getEvents(com.stefan.sklub.Interfaces.OnGetItems<Event> onGetDataCallbacks) {
         Log.d(TAG, "Getting events...");
         db.collection("events").orderBy("date").get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -137,16 +164,19 @@ public class FirestoreDB {
                         if (fetchEventTask.isSuccessful() && fetchEventTask.getResult() != null) {
                             for (final QueryDocumentSnapshot eventDocument : fetchEventTask.getResult()) {
                                 Event event = new Event();
-                                event.setEventId(eventDocument.getId());
+                                event.setEventDocId(eventDocument.getId());
                                 event.setName((String) eventDocument.get("name"));
                                 event.setDate((Timestamp) eventDocument.get("date"));
                                 event.setSport((String) eventDocument.get("sport"));
+                                event.setDescription((String) eventDocument.get("description"));
 
-                                getUserProfile((DocumentReference) eventDocument.get("organiser"), user -> {
+                                getUserByUserDocId(((DocumentReference) eventDocument.get("organiser")).getId(), (User user) -> {
                                     event.setOrganiser(user);
+
                                     getPlace((DocumentReference) eventDocument.get("place"), (OnGetListener<Place>) place -> {
                                         event.setPlace(place);
-                                        onGetEventListener.onGetEvent(event);
+
+                                        onGetDataCallbacks.onGetItem(event);
                                     });
                                 });
                             }
@@ -169,115 +199,105 @@ public class FirestoreDB {
 
         db.collection("users")
                 .add(newUserMap)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
-                        onAddUserListener.onAddUser();
-                    }
+                .addOnSuccessListener(documentReference -> {
+                    geoFireUsersRef.setLocation(documentReference.getId(), geoPointToGeoLocation(user.getLocationAsGeoPoint()), (key, exception) ->   {
+                        if (exception == null) {
+                            onAddUserListener.onAddUser();
+                        }
+                    });
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                    }
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error adding User", e);
                 });
     }
 
-    public void getUserProfile(String userUid, OnGetUserListener callback) {
-        db.collection("users").whereEqualTo("userUid", userUid).get()
+    public void getUserByUserDocId(String userDocId, OnGetUserListener callback) {
+        Log.d(TAG, "getUserByUserDocId(): getting user");
+
+        db.collection("users").document(userDocId).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        if (task.getResult() != null && task.getResult().size() > 0) {
-                            DocumentSnapshot userDocumentSnapshot = task.getResult().getDocuments().get(0);
+                        if (task.getResult().exists()) {
+                            DocumentSnapshot userDocumentSnapshot = task.getResult();
                             User user = new User();
+                            user.setUserDocId(userDocumentSnapshot.getId());
+                            user.setUserUid((String) userDocumentSnapshot.get("userUid"));
                             user.setFirstname((String) userDocumentSnapshot.get("firstname"));
                             user.setLastname((String) userDocumentSnapshot.get("lastname"));
                             user.setBirthday((Timestamp) userDocumentSnapshot.get("birthday"));
                             user.setImgUri((String) userDocumentSnapshot.get("img"));
 
-                            getStorageDownloadUrl((String) userDocumentSnapshot.get("img"), url -> {
-                                user.setImgUri(url.toString());
-                                callback.onGetUser(user);
+                            getGeoFireLocation(geoFireUsersRef, userDocId, data -> {
+                                user.setLocation(data);
+                                getStorageDownloadUrl((String) userDocumentSnapshot.get("img"), url -> {
+                                    user.setImgUri(url);
+                                    callback.onGetUser(user);
+                                });
                             });
-
+                        } else {
+                            Log.e(TAG, "getUserProfile(): User not found");
                         }
                     } else {
-                        Log.d(TAG, "Error getting documents: ", task.getException());
+                        Log.e(TAG, "getUserProfile(): Error getting documents: ", task.getException());
                     }
                 });
     }
 
-    public void getUserProfile(DocumentReference userDocRef, OnGetUserListener callback) {
-        Log.d(TAG, "Getting user profile...");
+    public void getUserByUserUid(String userUid, OnGetItem<User> callback) {
+        Log.d(TAG, "getUserByUserUid(): getting user");
 
-        userDocRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+        db.collection("users").whereEqualTo("userUid", userUid).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot userQueryDocumentSnapshot : task.getResult()) {
+                            Log.d(TAG, "getUserByUserUid(): User found");
 
-                        User user = new User();
-                        user.setFirstname((String) document.get("firstname"));
-                        user.setLastname((String) document.get("lastname"));
-                        user.setBirthday((Timestamp) document.get("birthday"));
-                        user.setLocation((GeoPoint) document.get("location"));
-                        user.setImgUri((String) document.get("img"));
+                            User user = new User();
+                            user.setUserDocId(userQueryDocumentSnapshot.getId());
+                            user.setUserUid((String) userQueryDocumentSnapshot.get("userUid"));
+                            user.setFirstname((String) userQueryDocumentSnapshot.get("firstname"));
+                            user.setLastname((String) userQueryDocumentSnapshot.get("lastname"));
+                            user.setBirthday((Timestamp) userQueryDocumentSnapshot.get("birthday"));
+                            user.setImgUri((String) userQueryDocumentSnapshot.get("img"));
 
-                        getStorageDownloadUrl((String) document.get("img"), url -> {
-                            user.setImgUri(url);
-                            callback.onGetUser(user);
-                        });
-
+                            getGeoFireLocation(geoFireUsersRef, userQueryDocumentSnapshot.getId(), data -> {
+                                user.setLocation(data);
+                                getStorageDownloadUrl((String) userQueryDocumentSnapshot.get("img"), url -> {
+                                    user.setImgUri(url);
+                                    callback.onGetItem(user);
+                                });
+                            });
+                        }
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.e(TAG, "getUserByUserUid(): Error getting documents: ", task.getException());
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
+                });
     }
 
     // CRUD: Places
 
-    public void addPlace(Place place, byte[] data, OnAddPlaceListener onAddPlaceListener) {
+    public void addPlace(Place place, byte[] imgByteArray, OnAddPlaceListener onAddPlaceListener) {
         Map<String, Object> newPlaceMap = new HashMap<String, Object>();
         newPlaceMap.put("name", place.getName());
         newPlaceMap.put("location", place.getLocation());
-        newPlaceMap.put("imgUri", "places/" + place.getName() + ".jpg");
+        newPlaceMap.put("img", "places/" + place.getName() + ".jpg");
 
-        StorageReference newImageRef = mStorageRef.child("places/" + place.getName() + ".jpg");
-
-        UploadTask uploadTask = newImageRef.putBytes(data);
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.d(TAG, "Image upload failed");
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Log.d(TAG, "Image upload successfull");
-
-                db.collection("places")
-                        .add(newPlaceMap)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d(TAG, "DocumentSnapshot written with ID: " + documentReference.getId());
+        addStorageImg("places", place.getName(), imgByteArray, data1 -> {
+            db.collection("places").add(newPlaceMap)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            setGeoFireLocation(geoFirePlacesRef, documentReference.getId(), place.getLocation(), data1 -> {
                                 onAddPlaceListener.onAddPlace();
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error adding document", e);
-                            }
-                        });
-            }
+                            });
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error adding document", e);
+                        }
+                    });
         });
     }
 
@@ -303,7 +323,7 @@ public class FirestoreDB {
         });
     }
 
-    public void getPlace(DocumentReference placeDocRef, OnGetListener listener) {
+    public void getPlace(DocumentReference placeDocRef, OnGetListener<Place> listener) {
         placeDocRef.get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
@@ -311,58 +331,61 @@ public class FirestoreDB {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
-                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-
                                 Place place = new Place();
                                 place.setPlaceDocId(document.getId());
                                 place.setName((String) document.get("name"));
                                 place.setLocation((GeoPoint) document.get("location"));
+
                                 getStorageDownloadUrl((String) document.get("img"), url -> {
                                     place.setImgUri(url);
 
                                     listener.onGet(place);
                                 });
                             } else {
-                                Log.d(TAG, "No such document");
+                                Log.d(TAG, "getPlace(): No such document");
                             }
                         } else {
-                            Log.d(TAG, "get failed with ", task.getException());
+                            Log.d(TAG, "getPlace(): get failed with ", task.getException());
                         }
                     }
                 });
     }
 
-    public void getPlaces(String queryParameter, OnGetPlacesListener callback) {
-        List<Place> places = new ArrayList<>();
-        db.collection("places").get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            if (task.getResult() != null && task.getResult().size() > 0) {
-                                for (final QueryDocumentSnapshot placeDocument : task.getResult()) {
-                                    Place place = new Place();
-                                    place.setName((String) placeDocument.get("name"));
-                                    place.setImgUri((String) placeDocument.get("img"));
-                                    place.setLocation((GeoPoint) placeDocument.get("location"));
-                                    places.add(place);
-                                }
-                                callback.onGetPlaces(places);
-                            }
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
+    public void getPlaces(GeoPoint mapLocationCenter, OnComplete<Place> callback) {
+        geoFireQueryByLocation(geoFirePlacesRef, mapLocationCenter, 5.5, placeDocId -> {
+           getPlace(db.collection("places").document(placeDocId), result -> {
+               callback.onComplete(result);
+           });
+        });
     }
 
     // Firebase Storage
 
+    private void addStorageImg(String collectionName, String imageName, byte[] data, OnComplete<String> onCompleteCallback) {
+        StorageReference newImageRef = mStorageRef.child(collectionName + "/" + imageName + ".jpg");
+
+        UploadTask uploadTask = newImageRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.d(TAG, "addStorageImg: error uploading image ", exception);
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Log.d(TAG, "addStorageImg: image successfully uploaded");
+                onCompleteCallback.onComplete(newImageRef.getPath());
+            }
+        });
+    }
+
     private void getStorageDownloadUrl(String pathString, OnGetStorageDownloadUrlListener callback) {
+        Log.d(TAG, "getStorageDownloadUrl(): getting download URL");
         mStorageRef.child(pathString).getDownloadUrl()
                 .addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
+                        Log.d(TAG, "getStorageDownloadUrl(): success");
                         callback.onGetStorageDownloadUrl(uri.toString());
                     }
                 })
@@ -374,8 +397,71 @@ public class FirestoreDB {
                 });
     }
 
+    // GeoFire
+
+    private void setGeoFireLocation(GeoFire geoFireCollectionRef, String docId, GeoPoint newLocation, OnComplete<GeoPoint> onCompleteCallback) {
+        geoFireCollectionRef.setLocation(docId, new GeoLocation(newLocation.getLatitude(), newLocation.getLongitude()), (key, exception) -> {
+            onCompleteCallback.onComplete(newLocation);
+        });
+    }
+
+    private void getGeoFireLocation(GeoFire geoFireCollectionRef, String docId, OnComplete<GeoPoint> onCompleteCallback) {
+        Log.d(TAG, "getGeoFireLocation(): getting location");
+
+        geoFireCollectionRef.getLocation(docId, new LocationCallback() {
+            @Override
+            public void onLocationResult(String key, GeoLocation location) {
+                Log.d(TAG, "getGeoFireLocation(): success");
+                onCompleteCallback.onComplete(new GeoPoint(location.latitude, location.longitude));
+            }
+
+            @Override
+            public void onCancelled(Exception exception) {
+                Log.e(TAG, "getGeoFireLocation(): ERROR: ", exception);
+            }
+        });
+    }
+
+    private void geoFireQueryByLocation(GeoFire geoFireCollectionRef, GeoPoint location, double radius, OnComplete<String> onGetDocId) {
+        GeoQuery geoQuery = geoFireCollectionRef.queryAtLocation(geoPointToGeoLocation(location), radius);
+
+        geoQuery.addGeoQueryEventListener(new GeoQueryEventListener() {
+            @Override
+            public void onKeyEntered(String key, GeoLocation location) {
+//                System.out.println(String.format("Key %s entered the search area at [%f,%f]", key, location.latitude, location.longitude));
+
+                onGetDocId.onComplete(key);
+            }
+
+            @Override
+            public void onKeyExited(String key) {
+                System.out.println(String.format("Key %s is no longer in the search area", key));
+            }
+
+            @Override
+            public void onKeyMoved(String key, GeoLocation location) {
+                System.out.println(String.format("Key %s moved within the search area to [%f,%f]", key, location.latitude, location.longitude));
+            }
+
+            @Override
+            public void onGeoQueryReady() {
+                System.out.println("All initial data has been loaded and events have been fired!");
+            }
+
+            @Override
+            public void onGeoQueryError(Exception exception) {
+                System.err.println("There was an error with this query: " + exception.toString());
+            }
+        });
+    }
+
     // Utilities
 
+    /**
+     * Converts a {@link java.time.LocalDate LocalDate} date to {@link com.google.firebase.Timestamp Timestamp}
+     * @param timestamp Date to convert
+     * @return {@link java.time.LocalDate LocalDate}
+     */
     private LocalDate timestampToLocalDate(Timestamp timestamp) {
         return timestamp.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
@@ -388,13 +474,43 @@ public class FirestoreDB {
         return new Timestamp(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()));
     }
 
-    private Map<String, Object> getEventMap(Event event) {
-        Map<String, Object> newEventMap = new HashMap<String, Object>();
-        newEventMap.put("date", localDateTimeToTimestamp(event.getDate()));
-        newEventMap.put("name", event.getName());
-        newEventMap.put("organiser", db.document("users/" + event.getPlace().getPlaceDocId()));
-        newEventMap.put("place", db.document("places/" + event.getPlace().getPlaceDocId()));
-        newEventMap.put("sport", event.getSport());
-        return newEventMap;
+    private GeoLocation geoPointToGeoLocation(GeoPoint geoPoint) {
+        return new GeoLocation(geoPoint.getLatitude(), geoPoint.getLongitude());
     }
+
+    private GeoLocation geoLocationToGeoPoint(GeoLocation geoLocation) {
+        return new GeoLocation(geoLocation.latitude, geoLocation.longitude);
+    }
+
+    // Fixes
+
+    /*public void fixGeoFirestoreDocumentsUsers() {
+        db.collection("users").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot userDocumentSnapshot : task.getResult().getDocuments()) {
+                            setGeoFireLocation(geoFireUsersRef, userDocumentSnapshot.getId(), (GeoPoint) userDocumentSnapshot.get("location"), data -> {
+
+                            });
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                });
+    }
+
+    public void fixGeoFirestoreDocumentsPlaces() {
+        db.collection("places").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot userDocumentSnapshot : task.getResult().getDocuments()) {
+                            setGeoFireLocation(geoFirePlacesRef, userDocumentSnapshot.getId(), (GeoPoint) userDocumentSnapshot.get("location"), data -> {
+
+                            });
+                        }
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                });
+    }*/
 }

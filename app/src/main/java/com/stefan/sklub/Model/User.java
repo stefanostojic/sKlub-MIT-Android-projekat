@@ -150,6 +150,10 @@ public class User implements Parcelable {
         return location;
     }
 
+    public GeoPoint getLocationAsGeoPoint() {
+        return new GeoPoint(location.latitude, location.longitude);
+    }
+
     public void setLocation(LatLng location) {
         this.location = location;
     }

@@ -3,9 +3,9 @@
 
     <!-- "Mark Favorite", should appear as action button if possible -->
     <item
-        android:id="@+id/menu_action_edit"
-        android:icon="@drawable/ic_edit_white_36dp"
-        android:title="@string/menu_action_edit"
+        android:id="@+id/menu_action_share"
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="Share"
         app:showAsAction="ifRoom" />
 
 </menu>

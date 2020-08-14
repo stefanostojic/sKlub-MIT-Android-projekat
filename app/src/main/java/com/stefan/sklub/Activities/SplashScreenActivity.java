@@ -9,7 +9,7 @@ import android.os.Handler;
 import com.google.firebase.auth.FirebaseAuth;
 import com.stefan.sklub.R;
 
-public class SplashScreenActivity extends AppCompatActivity {
+public class SplashScreenActivity extends BaseActivity {
 
     private FirebaseAuth mAuth;
 

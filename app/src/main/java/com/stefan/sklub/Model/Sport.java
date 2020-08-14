@@ -33,22 +33,24 @@ public class Sport implements Parcelable {
 //    }
 
     public static Uri getImgUri(String name) {
-        String image_name = "";
-        if (name.equals("Basketball")) {
-            image_name = "basketball";
-        } else if (name.equals("Frisbee")) {
-            image_name = "frisbee";
-        } else if (name.equals("Ice skating")){
-            image_name = "ice_skating";
-        } else if (name.equals("Mountain climbing")) {
-            image_name = "mountain_climbing";
-        } else if (name.equals("Running")) {
-            image_name = "running";
-        } else {
-            image_name = "volleyball";
-        }
+//        String image_name = "";
+//        if (name.equals("Basketball")) {
+//            image_name = "basketball";
+//        } else if (name.equals("Frisbee")) {
+//            image_name = "frisbee";
+//        } else if (name.equals("Ice skating")){
+//            image_name = "ice_skating";
+//        } else if (name.equals("Mountain climbing")) {
+//            image_name = "mountain_climbing";
+//        } else if (name.equals("Running")) {
+//            image_name = "running";
+//        } else {
+//            image_name = "volleyball";
+//        }
 
-        return Uri.parse("android.resource://com.stefan.sklub/drawable/" + image_name);
+        return Uri.parse("android.resource://com.stefan.sklub/drawable/" + name.replace(" ", "_").toLowerCase());
+
+//        return Uri.parse("android.resource://com.stefan.sklub/drawable/" + image_name);
     }
 
     public int describeContents() {

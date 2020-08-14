@@ -1,8 +1,6 @@
 package com.stefan.sklub.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,7 +15,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.stefan.sklub.Model.Event;
 import com.stefan.sklub.Model.Sport;
 import com.stefan.sklub.R;
-import com.stefan.sklub.Activities.EventDetailsActivity;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -76,12 +73,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventAdapter
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-/*
-            Intent eventDetailsIntent = new Intent(context, EventDetailsActivity.class);
-            eventDetailsIntent.putExtra("event", mEventsData.get(adapterPosition));
-            eventDetailsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(eventDetailsIntent);
-*/
+
             mClickHandler.onEventRecycleViewItemClick(mEventsData.get(adapterPosition));
         }
     }
@@ -89,7 +81,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventAdapter
     @Override
     public EventAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
-        int layoutIdForListItem = R.layout.event_list_item;
+        int layoutIdForListItem = R.layout.recyclerview_event_list_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 

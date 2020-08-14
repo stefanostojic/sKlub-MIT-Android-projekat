@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.stefan.sklub">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -18,22 +18,27 @@
         android:supportsRtl="true"
         android:theme="@style/BlueAppTheme">
         <activity
+            android:name=".Activities.EditProfileActivity"
+            android:parentActivityName=".Activities.UserProfileActivity" />
+        <activity
             android:name=".Activities.SplashScreenActivity"
-            android:theme="@style/BlueAppTheme.NoActionBar">
+            android:theme="@style/BlueAppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".Activities.LoginActivity"
-            android:theme="@style/BlueAppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/BlueAppTheme.NoActionBar" />
         <activity
             android:name=".Activities.RegisterActivity"
             android:parentActivityName=".Activities.LoginActivity"
             android:theme="@style/BlueAppTheme.NoActionBar" />
-        <activity android:name=".Activities.MainActivity" />
+        <activity
+            android:name=".Activities.MainActivity"
+            android:launchMode="singleTop" />
         <activity
             android:name=".Activities.SettingsActivity"
             android:parentActivityName=".Activities.MainActivity" />
@@ -48,18 +53,15 @@
             android:parentActivityName=".Activities.MainActivity" />
         <activity
             android:name=".Activities.AddPlaceActivity"
-            android:parentActivityName=".Activities.AddEventActivity" />
-
-<!--        <provider-->
-<!--            android:name="androidx.core.content.FileProvider"-->
-<!--            android:authorities="${applicationId}.provider"-->
-<!--            android:exported="false"-->
-<!--            android:grantUriPermissions="true">-->
-<!--            <meta-data-->
-<!--                android:name="android.support.FILE_PROVIDER_PATHS"-->
-<!--                android:resource="@xml/provider_paths" />-->
-<!--        </provider>-->
-
+            android:parentActivityName=".Activities.AddEventActivity" /> <!-- <provider -->
+        <!-- android:name="androidx.core.content.FileProvider" -->
+        <!-- android:authorities="${applicationId}.provider" -->
+        <!-- android:exported="false" -->
+        <!-- android:grantUriPermissions="true"> -->
+        <!-- <meta-data -->
+        <!-- android:name="android.support.FILE_PROVIDER_PATHS" -->
+        <!-- android:resource="@xml/provider_paths" /> -->
+        <!-- </provider> -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

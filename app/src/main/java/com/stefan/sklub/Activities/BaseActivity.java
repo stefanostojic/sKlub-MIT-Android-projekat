@@ -2,6 +2,7 @@ package com.stefan.sklub.Activities;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -31,10 +32,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -43,6 +44,12 @@ public abstract class BaseActivity extends AppCompatActivity {
                 Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
                 userProfileIntent.putExtra("userUid", FirebaseAuth.getInstance().getCurrentUser().getUid());
                 startActivity(userProfileIntent);
+                return true;
+            case R.id.menu_action_add_place:
+                startActivity(new Intent(this, AddPlaceActivity.class));
+                return true;
+            case R.id.menu_action_edit:
+                startActivity(new Intent(this, EditProfileActivity.class));
                 return true;
             case R.id.menu_action_settings:
                 startActivity(new Intent(this, SettingsActivity.class));
@@ -56,5 +63,55 @@ public abstract class BaseActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(getLogTag(), "onStart()");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(getLogTag(), "onResume()");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(getLogTag(), "onPause()");
+        if(isFinishing()){
+            Log.d(getLogTag(), "onPause() is finishing");
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(getLogTag(), "onStop()");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(getLogTag(), "onRestart()");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(getLogTag(), "onDestroy()");
+    }
+
+    private String getLogTag() {
+        return this.getLocalClassName().replace("Activities.", "") + " ispis";
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        System.gc();
+        this.finishAffinity();
     }
 }

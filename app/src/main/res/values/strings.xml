@@ -22,7 +22,7 @@
     <string name="hint_password">Password</string>
     <string name="hint_repeat_password">Repeat password</string>
     <string name="hint_place_name">Name</string>
-    <string name="placeholder_event_name">Naziv događaja</string>
+    <string name="placeholder_event_name">Event name</string>
     <string name="hint_time">Time</string>
     <string name="hint_date">Date</string>
     <string name="menu_action_edit">Edit</string>
@@ -34,4 +34,10 @@
     <string name="hint_event_date_and_time">Date and time</string>
     <string name="menu_action_sign_out">Sign out</string>
     <string name="content_description_sklub_logo">sKlub logo</string>
+    <string name="action_bar_add_new_event">Add new event</string>
+    <string name="menu_action_add_place">Add new place</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="placeholder_event_sport_name">Sport name</string>
+    <string name="menu_action_report">Report</string>
+    <string name="menu_action_delete">Delete</string>
 </resources>
