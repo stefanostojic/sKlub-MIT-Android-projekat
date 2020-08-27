@@ -14,8 +14,11 @@
         android:layout_height="128dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars"
-        android:contentDescription="@string/content_description_user_profile_image" />
+        tools:srcCompat="@drawable/ic_person_white_36dp"
+        android:contentDescription="@string/content_description_user_profile_image"
+        android:adjustViewBounds="true"
+        android:background="@drawable/sport_icon_background"
+        android:padding="4dp" />
 
     <TextView
         android:id="@+id/tv_firstname"
@@ -29,38 +32,68 @@
         app:layout_constraintBottom_toBottomOf="@+id/iv_img"
         app:layout_constraintStart_toEndOf="@+id/iv_img"
         app:layout_constraintTop_toTopOf="@+id/iv_img"
-        app:layout_constraintVertical_bias="0.316" />
+        app:layout_constraintVertical_bias="0.26" />
 
     <TextView
         android:id="@+id/tv_lastname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:fontFamily="@font/poppins_regular"
         android:text="@string/hint_lastname"
         app:layout_constraintStart_toStartOf="@+id/tv_firstname"
-        app:layout_constraintTop_toBottomOf="@+id/tv_firstname" />
+        app:layout_constraintTop_toTopOf="@+id/tv_firstname" />
+
+    <TextView
+        android:id="@+id/tv_gender_and_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/poppins_regular"
+        android:text="@string/placeholder_gender_and_age"
+        app:layout_constraintStart_toStartOf="@+id/tv_firstname"
+        app:layout_constraintTop_toBottomOf="@+id/tv_lastname" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/user_profile_tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:visibility="visible"
         app:layout_constraintTop_toBottomOf="@+id/iv_img"
-        app:layout_constraintVertical_bias="1.0"
         tools:layout_editor_absoluteX="16dp">
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/user_profile_my_events_tab"
-            />
+            android:text="@string/user_profile_my_events_tab" />
 
         <com.google.android.material.tabs.TabItem
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/user_profile_attended_events_tab"
-            />
+            android:text="@string/user_profile_attended_events_tab" />
 
     </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_profile_tab_layout"
+        tools:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/frameLayoutForUserProfile"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/user_profile_tab_layout">
+
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

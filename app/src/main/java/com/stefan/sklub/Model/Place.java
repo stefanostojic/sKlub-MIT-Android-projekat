@@ -3,6 +3,8 @@ package com.stefan.sklub.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.GeoPoint;
 
@@ -10,21 +12,17 @@ public class Place implements Parcelable {
     private String placeDocId;
     private String name;
     private GeoPoint location;
-    private String imgUri;
+    private String imgUrl;
 
     public Place() {
 
     }
 
-    public Place(String placeDocId, String name, GeoPoint location, String imgUri) {
+    public Place(String placeDocId, String name, GeoPoint location, String imgUrl) {
         this.placeDocId = placeDocId;
         this.name = name;
         this.location = location;
-        this.imgUri = imgUri;
-    }
-
-    public String documentPath() {
-        return "places/" + placeDocId;
+        this.imgUrl = imgUrl;
     }
 
     public int describeContents() {
@@ -36,7 +34,7 @@ public class Place implements Parcelable {
         out.writeString(name);
         out.writeDouble(location.getLatitude());
         out.writeDouble(location.getLongitude());
-        out.writeString(imgUri);
+        out.writeString(imgUrl);
     }
 
     public static final Parcelable.Creator<Place> CREATOR = new Parcelable.Creator<Place>() {
@@ -53,11 +51,13 @@ public class Place implements Parcelable {
         placeDocId = in.readString();
         name = in.readString();
         location = new GeoPoint(in.readDouble(), in.readDouble());
-        imgUri = in.readString();
+        imgUrl = in.readString();
     }
 
+    @NonNull
+    @Override
     public String toString() {
-        return "{ placeDocId: " + placeDocId + ", name: " + name + ", location: " + location + ", imgUri: " + imgUri + " }";
+        return "{ placeDocId: " + placeDocId + ", name: " + name + ", location: " + location + ", imgUri: " + imgUrl + " }";
     }
 
     public String getPlaceDocId() {
@@ -96,11 +96,11 @@ public class Place implements Parcelable {
         this.location = geoPoint;
     }
 
-    public String getImgUri() {
-        return imgUri;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setImgUri(String imgUri) {
-        this.imgUri = imgUri;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 }

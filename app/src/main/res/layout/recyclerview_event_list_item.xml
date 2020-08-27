@@ -41,14 +41,14 @@
 
     <ImageView
         android:id="@+id/gradient_overlay"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/gradient_overlay" />
+        app:srcCompat="@drawable/event_img_overlay_blue" />
 
     <ImageView
         android:id="@+id/iv_event_icon"
@@ -58,7 +58,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/volleyball_256" />
+        app:srcCompat="@drawable/volleyball" />
 
     <TextView
         android:id="@+id/tv_event_name"
@@ -148,15 +148,6 @@
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@+id/tv_time"
         app:layout_constraintTop_toTopOf="@+id/tv_time" />
-
-    <!--    <ImageView-->
-    <!--        android:id="@+id/iv_place_icon"-->
-    <!--        android:layout_width="32dp"-->
-    <!--        android:layout_height="32dp"-->
-    <!--        android:layout_marginTop="8dp"-->
-    <!--        app:layout_constraintStart_toStartOf="@+id/iv_time_icon"-->
-    <!--        app:layout_constraintTop_toBottomOf="@+id/iv_time_icon"-->
-    <!--        tools:srcCompat="@drawable/ic_access_time_white_18dp" />-->
 
     <TextView
         android:id="@+id/tv_place"

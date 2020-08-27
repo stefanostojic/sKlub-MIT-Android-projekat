@@ -1,6 +1,7 @@
 package com.stefan.sklub.Adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -74,7 +75,10 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventAdapter
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
 
-            mClickHandler.onEventRecycleViewItemClick(mEventsData.get(adapterPosition));
+            if (mClickHandler != null)
+                mClickHandler.onEventRecycleViewItemClick(mEventsData.get(adapterPosition));
+            else
+                Log.d(TAG, "No click handler defined");
         }
     }
 
@@ -97,13 +101,13 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventAdapter
 
         RequestOptions options = new RequestOptions()
                 .centerCrop()
-                .placeholder(R.drawable.ic_person_black_18dp)
-                .error(R.drawable.ic_person_black_18dp)
+                .placeholder(R.drawable.ic_person_white_18dp)
+                .error(R.drawable.ic_person_white_18dp)
                 .circleCrop();
 
         Glide.with(context)
                 .asBitmap()
-                .load(mEventsData.get(position).getPlace().getImgUri())
+                .load(mEventsData.get(position).getPlace().getImgUrl())
                 .into(eventAdapterViewHolder.iv_event);
         Glide.with(context)
                 .asBitmap()
@@ -112,15 +116,15 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventAdapter
                 .into(eventAdapterViewHolder.iv_event_icon);
         Glide.with(context)
                 .asBitmap()
-                .load(mEventsData.get(position).getOrganiser().getImgUri())
+                .load(mEventsData.get(position).getOrganiser().getImgUrl())
                 .apply(options)
                 .into(eventAdapterViewHolder.iv_organiser);
 
         eventAdapterViewHolder.tv_event_name.setText(mEventsData.get(position).getName());
-        eventAdapterViewHolder.tv_organiser_firstname.setText(mEventsData.get(position).getOrganiser().getFirstname());
-        eventAdapterViewHolder.tv_organiser_lastname.setText(mEventsData.get(position).getOrganiser().getLastname());
+        eventAdapterViewHolder.tv_organiser_firstname.setText(mEventsData.get(position).getOrganiser().getFirstName());
+        eventAdapterViewHolder.tv_organiser_lastname.setText(mEventsData.get(position).getOrganiser().getLastName());
         eventAdapterViewHolder.tv_time.setText(mEventsData.get(position).getDate().format(DateTimeFormatter.ofPattern("HH:mm")));
-        eventAdapterViewHolder.tv_date.setText(mEventsData.get(position).getDate().format(DateTimeFormatter.ofPattern("dd.MM")));
+        eventAdapterViewHolder.tv_date.setText(mEventsData.get(position).getDate().format(DateTimeFormatter.ofPattern("dd.MM.")));
         eventAdapterViewHolder.tv_place.setText(mEventsData.get(position).getPlace().getName());
     }
 
@@ -135,15 +139,16 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventAdapter
         return mEventsData.size();
     }
 
-//    public void setEventsData(List<Event> eventsData) {
-//        mEventsData = eventsData;
-//        notifyDataSetChanged();
-//    }
+    public void setEventsData(List<Event> eventsData) {
+        mEventsData = eventsData;
+        notifyDataSetChanged();
+    }
 
     public void addEvent(Event event) {
         if (mEventsData == null)
             mEventsData = new ArrayList<Event>();
-        mEventsData.add(event);
+        Log.d(TAG, "addEvent(): event: " + event);
+        mEventsData.add(0, event);
 //        Log.d(TAG, "event added to recycle view");
         Collections.sort(mEventsData);
         notifyDataSetChanged();

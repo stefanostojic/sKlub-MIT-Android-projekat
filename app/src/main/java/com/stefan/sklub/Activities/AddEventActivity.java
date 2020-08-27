@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
@@ -34,6 +35,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.GeoPoint;
 import com.stefan.sklub.Database.FirestoreDB;
+import com.stefan.sklub.Interfaces.OnAddItem;
 import com.stefan.sklub.Model.Event;
 import com.stefan.sklub.Model.Place;
 import com.stefan.sklub.Model.Sport;
@@ -47,10 +49,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+
 public class AddEventActivity extends BaseActivity {
     private final String TAG = "AddEventActivity ispis";
 
     private GoogleMap map;
+    private User me;
     private EditText et_location;
     private TextInputLayout til_name;
     private TextInputLayout til_sport;
@@ -79,6 +84,12 @@ public class AddEventActivity extends BaseActivity {
         firestoreDB = FirestoreDB.getInstance();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
+        if (getIntent().hasExtra("me")) {
+            me = getIntent().getParcelableExtra("me");
+        } else {
+            Log.e(TAG, "No app user data");
+        }
+
         til_name = findViewById(R.id.til_event_name);
         til_sport = findViewById(R.id.til_sport_dropdown);
         til_description = findViewById(R.id.til_event_description);
@@ -104,6 +115,7 @@ public class AddEventActivity extends BaseActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.dropdown_menu_item, menuItems);
         AutoCompleteTextView actw = (AutoCompleteTextView) til_sport.getEditText();
         actw.setAdapter(adapter);
+
     }
 
     @Override
@@ -168,13 +180,6 @@ public class AddEventActivity extends BaseActivity {
             selectedPlace = places.get(markers.indexOf(marker));
         }
 
-//        for (Place place : places) {
-//            if (place.getLocationAsLatLng().equals(marker.getPosition())) {
-//                Log.d(TAG, "places matched");
-//                selectedPlace = place;
-//            }
-//        }
-
         if (selectedPlace == null) {
             Log.d(TAG, "Selected marker didn't match a place from the list");
         }
@@ -188,16 +193,21 @@ public class AddEventActivity extends BaseActivity {
         final View dialogView = View.inflate(this, R.layout.dialog_date_picker, null);
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
-        dialogView.findViewById(R.id.date_set).setOnClickListener((View.OnClickListener) view -> {
+        dialogView.findViewById(R.id.date_set).setOnClickListener(view -> {
 
             DatePicker datePicker = (DatePicker) dialogView.findViewById(R.id.date_picker);
 
             selectedDate = LocalDate.of(datePicker.getYear(),
-                    datePicker.getMonth(),
+                    datePicker.getMonth() + 1,
                     datePicker.getDayOfMonth());
 
-            alertDialog.dismiss();
-            pickTime();
+            if (selectedDate.isBefore(LocalDate.now())) {
+                Toast.makeText(this, "The date can't be before today.", Toast.LENGTH_SHORT).show();
+                selectedDate = null;
+            } else {
+                alertDialog.dismiss();
+                pickTime();
+            }
         });
         alertDialog.setView(dialogView);
         alertDialog.show();
@@ -207,15 +217,21 @@ public class AddEventActivity extends BaseActivity {
         final View dialogView = View.inflate(this, R.layout.dialog_time_picker, null);
         final AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
-        dialogView.findViewById(R.id.time_set).setOnClickListener((View.OnClickListener) view -> {
+        dialogView.findViewById(R.id.time_set).setOnClickListener(view -> {
 
             TimePicker timePicker = (TimePicker) dialogView.findViewById(R.id.time_picker);
 
             selectedTime = LocalTime.of(timePicker.getHour(), timePicker.getMinute());
-
-            alertDialog.dismiss();
             selectedDateAndTime = LocalDateTime.of(selectedDate, selectedTime);
-            til_date_and_time.getEditText().setText(selectedDateAndTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
+
+            if (selectedDateAndTime.isAfter(LocalDateTime.now())) {
+                alertDialog.dismiss();
+                til_date_and_time.getEditText().setText(selectedDateAndTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
+            } else {
+                Toast.makeText(this, "The date and time can't be in the past.", Toast.LENGTH_SHORT).show();
+                selectedTime = null;
+                selectedDateAndTime = null;
+            }
         });
         alertDialog.setView(dialogView);
         alertDialog.show();
@@ -225,6 +241,7 @@ public class AddEventActivity extends BaseActivity {
 
         String event_name = til_name.getEditText().getText().toString();
         String sport_type = til_sport.getEditText().getText().toString();
+        String description = til_description.getEditText().getText().toString();
 
         if (event_name.isEmpty()) {
             Toast.makeText(this, "Event name field can't be empty", Toast.LENGTH_SHORT).show();
@@ -232,6 +249,10 @@ public class AddEventActivity extends BaseActivity {
         }
         if (sport_type.isEmpty()) {
             Toast.makeText(this, "Sport type not selected", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (description.isEmpty()) {
+            Toast.makeText(this, "Event description field can't be empty", Toast.LENGTH_SHORT).show();
             return;
         }
         if (selectedDateAndTime == null) {
@@ -245,17 +266,31 @@ public class AddEventActivity extends BaseActivity {
 
         Event event = new Event();
         event.setName(event_name);
+        event.setDescription(description);
         event.setSport(sport_type);
         event.setDate(selectedDateAndTime);
-        event.setOrganiser(new User(mAuth.getCurrentUser().getUid()));
+        event.setOrganiser(me);
         event.setPlace(selectedPlace);
 
-        firestoreDB.addEvent(event, () -> {
-            Toast.makeText(this, "Event successfully added", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(AddEventActivity.this, MainActivity.class);
-            intent.putExtra("event added", true);
-            startActivity(intent);
-            finish();
+        firestoreDB.addEvent(event, new OnAddItem() {
+            @Override
+            public void onAdd(String docId) {
+                event.setEventDocId(docId);
+                Toast.makeText(AddEventActivity.this, "Event successfully added", Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(AddEventActivity.this, MainActivity.class);
+//                intent.putExtra("event added", true);
+//                startActivity(intent);
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("event", event);
+                setResult(3, returnIntent);
+                finish();
+                // TODO: return to main activity with result (the newly added event)
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(AddEventActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

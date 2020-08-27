@@ -11,10 +11,10 @@
         android:title="@string/menu_action_add_place"
         app:showAsAction="never"/>
 
-    <item android:id="@+id/menu_action_settings"
-        android:icon="@drawable/ic_settings_black_18dp"
-        android:title="@string/menu_action_settings"
-        app:showAsAction="never"/>
+<!--    <item android:id="@+id/menu_action_settings"-->
+<!--        android:icon="@drawable/ic_settings_black_18dp"-->
+<!--        android:title="@string/menu_action_settings"-->
+<!--        app:showAsAction="never"/>-->
 
     <item android:id="@+id/menu_action_sign_out"
         android:title="@string/menu_action_sign_out"

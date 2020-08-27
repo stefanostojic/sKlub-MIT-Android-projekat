@@ -40,20 +40,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_action_my_profile:
-                Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
-                userProfileIntent.putExtra("userUid", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                startActivity(userProfileIntent);
-                return true;
+//            case R.id.menu_action_my_profile:
+//                Intent userProfileIntent = new Intent(this, UserProfileActivity.class);
+//                userProfileIntent.putExtra("me", FirebaseAuth.getInstance().getCurrentUser().getUid());
+//                startActivity(userProfileIntent);
+//                return true;
             case R.id.menu_action_add_place:
                 startActivity(new Intent(this, AddPlaceActivity.class));
                 return true;
-            case R.id.menu_action_edit:
-                startActivity(new Intent(this, EditProfileActivity.class));
-                return true;
-            case R.id.menu_action_settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                return true;
+//            case R.id.menu_action_edit:
+//                startActivity(new Intent(this, EditProfileActivity.class));
+//                return true;
             case R.id.menu_action_sign_out:
                 FirebaseAuth.getInstance().signOut();
                 Intent loginIntent = new Intent(this, LoginActivity.class);
@@ -108,10 +105,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         return this.getLocalClassName().replace("Activities.", "") + " ispis";
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        System.gc();
-        this.finishAffinity();
-    }
+//    @Override
+//    public void onBackPressed() {
+//        super.onBackPressed();
+//        System.gc();
+//        this.finishAffinity();
+//    }
 }

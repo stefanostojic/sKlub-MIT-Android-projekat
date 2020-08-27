@@ -1,92 +1,233 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.EventDetailsActivity">
+    android:fillViewport="true"
+    android:paddingBottom="16dp">
 
-    <ImageView
-        android:id="@+id/iv_event"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/sample32" />
+        android:layout_height="match_parent"
+        tools:context=".Activities.EventDetailsActivity">
 
-    <ImageView
-        android:id="@+id/iv_event_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_event"
-        app:layout_constraintEnd_toEndOf="@+id/iv_event"
-        app:layout_constraintStart_toStartOf="@+id/iv_event"
-        app:layout_constraintTop_toTopOf="@+id/iv_event"
-        tools:srcCompat="@drawable/gradient_shape" />
+        <Button
+            android:id="@+id/btn_attendance2"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:onClick="seeOtherAttendees"
+            android:text="See others"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/btn_attendance"
+            app:layout_constraintStart_toStartOf="@+id/btn_attendance"
+            app:layout_constraintTop_toBottomOf="@+id/btn_attendance" />
 
-    <ImageView
-        android:id="@+id/iv_event_sport"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:layout_marginTop="20dp"
-        android:adjustViewBounds="true"
-        android:background="@drawable/sport_icon_background"
-        android:elevation="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.135"
-        app:layout_constraintStart_toStartOf="@+id/iv_event"
-        app:layout_constraintTop_toBottomOf="@+id/iv_event"
-        tools:srcCompat="@drawable/basketball" />
+        <ImageView
+            android:id="@+id/iv_event"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/content_description_event_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/sample32" />
 
-    <ImageView
-        android:id="@+id/iv_event_organiser"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginTop="16dp"
-        android:adjustViewBounds="true"
-        android:elevation="4dp"
-        app:layout_constraintStart_toStartOf="@+id/iv_event_sport"
-        app:layout_constraintTop_toBottomOf="@+id/iv_event_sport"
-        tools:srcCompat="@drawable/ic_person_black_36dp" />
+        <ImageView
+            android:id="@+id/iv_event_overlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_event"
+            app:layout_constraintEnd_toEndOf="@+id/iv_event"
+            app:layout_constraintStart_toStartOf="@+id/iv_event"
+            app:layout_constraintTop_toTopOf="@+id/iv_event"
+            tools:srcCompat="@drawable/gradient_shape" />
 
-    <TextView
-        android:id="@+id/tv_event_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/placeholder_event_name"
-        android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/iv_event_sport"
-        app:layout_constraintTop_toTopOf="@+id/iv_event_sport" />
+        <ImageView
+            android:id="@+id/iv_event_sport"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/sport_icon_background"
+            android:elevation="4dp"
+            app:layout_constraintStart_toStartOf="@+id/iv_event"
+            app:layout_constraintTop_toBottomOf="@+id/iv_event"
+            tools:srcCompat="@drawable/basketball" />
 
-    <TextView
-        android:id="@+id/tv_event_sport_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/placeholder_event_sport_name"
-        android:textSize="18sp"
-        app:layout_constraintStart_toStartOf="@+id/tv_event_name"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_name" />
+        <ImageView
+            android:id="@+id/iv_event_organiser"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:adjustViewBounds="true"
+            android:elevation="4dp"
+            android:onClick="onOrganiserClick"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_event_organiser_lastname"
+            app:layout_constraintEnd_toEndOf="@+id/iv_event_sport"
+            app:layout_constraintStart_toStartOf="@+id/iv_event_sport"
+            app:layout_constraintTop_toTopOf="@+id/tv_event_organiser_firstname"
+            tools:srcCompat="@drawable/ic_person_black_36dp" />
 
-    <TextView
-        android:id="@+id/tv_event_organiser_firstname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:text="@string/hint_firstname"
-        app:layout_constraintStart_toEndOf="@+id/iv_event_organiser"
-        app:layout_constraintTop_toTopOf="@+id/iv_event_organiser" />
+        <TextView
+            android:id="@+id/tv_event_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="@string/placeholder_event_name"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/btn_attendance"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/tv_event_sport_name"
+            app:layout_constraintTop_toTopOf="@+id/tv_event_sport_name" />
 
-    <TextView
-        android:id="@+id/tv_event_organiser_lastname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hint_lastname"
-        app:layout_constraintStart_toStartOf="@+id/tv_event_organiser_firstname"
-        app:layout_constraintTop_toBottomOf="@+id/tv_event_organiser_firstname" />
+        <TextView
+            android:id="@+id/tv_event_organiser_firstname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_bold"
+            android:onClick="onOrganiserClick"
+            android:text="@string/hint_firstname"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_event_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_event_name" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/tv_event_organiser_lastname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_regular"
+            android:onClick="onOrganiserClick"
+            android:text="@string/hint_lastname"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_event_organiser_firstname"
+            app:layout_constraintTop_toTopOf="@+id/tv_event_organiser_firstname" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Description:"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/iv_event_sport"
+            app:layout_constraintTop_toBottomOf="@+id/tv_place2" />
+
+        <TextView
+            android:id="@+id/tv_event_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="Description placeholder"
+            android:textColor="#535353"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/textView3"
+            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
+        <TextView
+            android:id="@+id/tv_event_sport_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/placeholder_event_sport_name"
+            android:textSize="10sp"
+            app:layout_constraintStart_toEndOf="@+id/iv_event_sport"
+            app:layout_constraintTop_toTopOf="@+id/iv_event_sport" />
+
+        <Button
+            android:id="@+id/btn_attendance"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:onClick="onBtnAttendanceClick"
+            android:text="I'm \nattending?"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_event_sport"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/iv_event_sport" />
+
+        <!--    <TextView-->
+        <!--        android:id="@+id/textView4"-->
+        <!--        android:layout_width="wrap_content"-->
+        <!--        android:layout_height="wrap_content"-->
+        <!--        android:layout_marginTop="8dp"-->
+        <!--        android:text="Attendees:"-->
+        <!--        android:textSize="12sp"-->
+        <!--        app:layout_constraintStart_toStartOf="@+id/tv_event_description"-->
+        <!--        app:layout_constraintTop_toBottomOf="@+id/tv_event_description" />-->
+
+        <TextView
+            android:id="@+id/tv_date2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_regular"
+            android:text="@string/hint_date"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_time2"
+            app:layout_constraintTop_toTopOf="@+id/tv_time2" />
+
+
+        <TextView
+            android:id="@+id/tv_place2"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/poppins_regular"
+            android:maxLines="2"
+            android:text="@string/hint_place_name"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_date2"
+            app:layout_constraintTop_toBottomOf="@+id/tv_date2"
+            app:lineHeight="10sp" />
+
+        <ImageView
+            android:id="@+id/iv_time_icon2"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:background="@drawable/sport_icon_background"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_date2"
+            app:layout_constraintStart_toStartOf="@+id/iv_event_organiser"
+            app:layout_constraintTop_toTopOf="@+id/tv_time2"
+            app:srcCompat="@drawable/ic_access_time_white_18dp" />
+
+        <TextView
+            android:id="@+id/tv_time2"
+            style="@style/TextAppearance.AppCompat.Large"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="@string/hint_time"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_event_organiser_lastname"
+            app:layout_constraintTop_toBottomOf="@+id/tv_event_organiser_lastname" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_place2"
+            app:layout_constraintStart_toStartOf="@+id/iv_time_icon2"
+            app:layout_constraintTop_toTopOf="@+id/tv_place2"
+            app:srcCompat="@drawable/mesto_ikonica" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

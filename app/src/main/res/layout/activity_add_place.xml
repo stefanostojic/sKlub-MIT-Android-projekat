@@ -30,10 +30,7 @@
         class="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -44,12 +41,13 @@
         android:layout_width="120dp"
         android:layout_height="80dp"
         android:layout_marginEnd="16dp"
+        android:background="@color/blue_colorPrimaryDark"
+        android:onClick="addImg"
+        android:padding="16dp"
+        android:src="@drawable/ic_round_add_photo_alternate_24"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/tf_place_name"
-        tools:src="@drawable/ic_image_white_48dp"
-        android:padding="16dp"
-        android:background="@color/colorPrimary"
-        android:onClick="addImg"/>
+        app:srcCompat="@drawable/ic_round_add_photo_alternate_24" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

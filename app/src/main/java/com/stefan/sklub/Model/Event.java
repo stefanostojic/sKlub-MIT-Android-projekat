@@ -4,61 +4,49 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Event implements Parcelable, Comparable<Event> {
     private String eventDocId;
     private String name;
+    private String description;
     private User organiser;
     private LocalDateTime date;
     private Place place;
     private String sport;
-    private String description;
+    private List<Attendee> attendees;
+    private List<Comment> comments;
 
     public Event() {
         this.organiser = new User();
         this.place = new Place();
+        this.attendees = new ArrayList<>();
+        this.comments = new ArrayList<>();
     }
 
-    public int describeContents() {
-        return 0;
-    }
-
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeString(eventDocId);
-        out.writeString(name);
-        out.writeParcelable(organiser, 0);
-        out.writeString(date.toString());
-        out.writeParcelable(place, 0);
-        out.writeString(sport);
-        out.writeString(description);
-    }
-
-    public static final Parcelable.Creator<Event> CREATOR = new Parcelable.Creator<Event>() {
-        public Event createFromParcel(Parcel in) {
-            return new Event(in);
-        }
-
-        public Event[] newArray(int size) {
-            return new Event[size];
-        }
-    };
-
-    private Event(Parcel in) {
-        eventDocId = in.readString();
-        name = in.readString();
-        organiser = in.readParcelable(getClass().getClassLoader());
-        date = LocalDateTime.parse(in.readString());
-        place = in.readParcelable(getClass().getClassLoader());
-        sport = in.readString();
-        description = in.readString();
-    }
-
+    @Override
     public String toString() {
-        return "{ eventDocId: " + eventDocId + ", name: " + name + ", organiser: " + organiser + ", date: " + date.toString() + ", place: " + place.toString() + ", sport: " + sport + " }";
+        return "Event{" +
+                "eventDocId='" + eventDocId + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", organiser=" + organiser +
+                ", date=" + date +
+                ", place=" + place +
+                ", sport='" + sport + '\'' +
+                ", attendees=" + attendees +
+                ", comments=" + comments +
+                '}';
     }
+//    public String toString() {
+//        return "{ eventDocId: " + eventDocId + ", name: " + name + ", organiser: " + organiser + ", date: " + date.toString() + ", place: " + place.toString() + ", sport: " + sport + " }";
+//    }
 
     @Override
     public int compareTo(Event event2) {
@@ -86,6 +74,14 @@ public class Event implements Parcelable, Comparable<Event> {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public User getOrganiser() {
         return organiser;
     }
@@ -100,10 +96,6 @@ public class Event implements Parcelable, Comparable<Event> {
 
     public void setDate(LocalDateTime date) {
         this.date = date;
-    }
-
-    public void setDate(Timestamp timestamp) {
-        this.date = timestamp.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     public Place getPlace() {
@@ -122,11 +114,61 @@ public class Event implements Parcelable, Comparable<Event> {
         this.sport = sport;
     }
 
-    public String getDescription() {
-        return description;
+    public List<Attendee> getAttendees() {
+        return attendees;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setAttendees(List<Attendee> attendees) {
+        this.attendees = attendees;
     }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.eventDocId);
+        dest.writeString(this.name);
+        dest.writeString(this.description);
+        dest.writeParcelable(this.organiser, flags);
+        dest.writeSerializable(this.date);
+        dest.writeParcelable(this.place, flags);
+        dest.writeString(this.sport);
+        dest.writeTypedList(this.attendees);
+        dest.writeTypedList(this.comments);
+    }
+
+    protected Event(Parcel in) {
+        this.eventDocId = in.readString();
+        this.name = in.readString();
+        this.description = in.readString();
+        this.organiser = in.readParcelable(User.class.getClassLoader());
+        this.date = (LocalDateTime) in.readSerializable();
+        this.place = in.readParcelable(Place.class.getClassLoader());
+        this.sport = in.readString();
+        this.attendees = in.createTypedArrayList(Attendee.CREATOR);
+        this.comments = in.createTypedArrayList(Comment.CREATOR);
+    }
+
+    public static final Creator<Event> CREATOR = new Creator<Event>() {
+        @Override
+        public Event createFromParcel(Parcel source) {
+            return new Event(source);
+        }
+
+        @Override
+        public Event[] newArray(int size) {
+            return new Event[size];
+        }
+    };
 }

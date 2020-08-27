@@ -1,6 +1,8 @@
 package com.stefan.sklub.Interfaces;
 
-public interface OnUpdateItem {
-    void onUpdate();
+import com.stefan.sklub.Model.User;
+
+public interface OnUpdateItem<T> {
+    void onSuccessfulUpdate(User newUserData);
     void onError(String error);
 }

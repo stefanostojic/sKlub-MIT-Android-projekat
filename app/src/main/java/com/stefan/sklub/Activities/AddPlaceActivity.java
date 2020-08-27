@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -15,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,10 +40,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.stefan.sklub.Database.FirestoreDB;
+import com.stefan.sklub.Interfaces.OnAddItem;
 import com.stefan.sklub.Model.Place;
 import com.stefan.sklub.R;
+import com.stefan.sklub.RotateBitmap;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class AddPlaceActivity extends BaseActivity {
@@ -59,7 +64,7 @@ public class AddPlaceActivity extends BaseActivity {
     private boolean isImgSet;
     private Bitmap imgBitmap;
     private ArrayList<Image> images = new ArrayList<>();
-
+    private boolean savingChangesInProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,28 +108,77 @@ public class AddPlaceActivity extends BaseActivity {
     }
 
     public void addImg(View view) {
-        ImagePicker imagePicker = ImagePicker.create(this)
-                .folderMode(true) // set folder mode (false by default)
-                .toolbarArrowColor(Color.WHITE) // set toolbar arrow up color
-                .toolbarFolderTitle("Folder") // folder selection title
-                .toolbarImageTitle("Tap to select") // image selection title
-                .toolbarDoneButtonText("Done"); // done button text
-        imagePicker.single();
-        imagePicker.start();
+//        ImagePicker imagePicker = ImagePicker.create(this)
+//                .folderMode(true) // set folder mode (false by default)
+//                .toolbarArrowColor(Color.WHITE) // set toolbar arrow up color
+//                .toolbarFolderTitle("Folder") // folder selection title
+//                .toolbarImageTitle("Tap to select") // image selection title
+//                .toolbarDoneButtonText("Done"); // done button text
+//        imagePicker.single();
+//        imagePicker.start();
+
+        if (savingChangesInProgress)
+            return;
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, 12345);
     }
 
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
-            images = (ArrayList<Image>) ImagePicker.getImages(data);
-//            printImages(images);
-            RequestOptions options = new RequestOptions()
-                    .centerCrop()
-                    .placeholder(R.drawable.ic_person_black_18dp)
-                    .error(R.drawable.ic_person_black_18dp);
+//        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+//            images = (ArrayList<Image>) ImagePicker.getImages(data);
+////            printImages(images);
+//            RequestOptions options = new RequestOptions()
+//                    .centerCrop()
+//                    .placeholder(R.drawable.ic_person_black_18dp)
+//                    .error(R.drawable.ic_person_black_18dp);
+//
+//            Bitmap bmp1 = BitmapFactory.decodeFile(images.get(0).getPath());
+//
+//            int x = 0;
+//            int height = bmp1.getHeight();
+//            int width = bmp1.getWidth();
+//            int startX = 0;
+//            int startY = 0;
+//            if ((double)width / height > 1.5) {
+//                // landscape img
+//                x = height / 2;
+//                width = 3 * x;
+//                startX = (bmp1.getWidth() - width) / 2;
+//            } else {
+//                // portrait img
+//                x = width / 3;
+//                height = x * 2;
+//                startY = (bmp1.getHeight() - height) / 2;
+//            }
+//
+//            Bitmap bitmap2 = Bitmap.createBitmap(bmp1, startX, startY, width, height);
+//            Bitmap bitmap3 = Bitmap.createScaledBitmap(bitmap2, 600, 400, false);
+//            imgBitmap = bitmap3;
+//            iv_img.setPadding(0, 0, 0, 0);
+//            Glide.with(this)
+//                    .load(bitmap3)
+//                    .apply(options)
+//                    .into(iv_img);
+//        }
+        if (requestCode == 12345 && resultCode == Activity.RESULT_OK) {
+            Uri selectedImageUri = data.getData();
 
-            Bitmap bmp1 = BitmapFactory.decodeFile(images.get(0).getPath());
+            RequestOptions options = new RequestOptions()
+                    .placeholder(R.drawable.ic_person_white_18dp)
+                    .error(R.drawable.ic_person_white_18dp)
+                    .circleCrop();
+
+            Bitmap bmp1 = null;
+            try {
+//                bmp1 = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedImageUri);
+                RotateBitmap rb = new RotateBitmap();
+                bmp1 = rb.HandleSamplingAndRotationBitmap(this, selectedImageUri);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             int x = 0;
             int height = bmp1.getHeight();
@@ -149,7 +203,6 @@ public class AddPlaceActivity extends BaseActivity {
             iv_img.setPadding(0, 0, 0, 0);
             Glide.with(this)
                     .load(bitmap3)
-                    .apply(options)
                     .into(iv_img);
         }
     }
@@ -160,7 +213,7 @@ public class AddPlaceActivity extends BaseActivity {
         int width = bmp1.getWidth();
         int startX = 0;
         int startY = 0;
-        if ((double)width / height > 1.5) {
+        if ((double)width / height > 1.1) {
             // landscape img
             sideLength = height;
             startX = (width - sideLength) / 2;
@@ -185,6 +238,8 @@ public class AddPlaceActivity extends BaseActivity {
             return;
         }
 
+        savingChangesInProgress = true;
+
         Place newPlace = new Place();
         newPlace.setName(tyl_name.getEditText().getText().toString());
         newPlace.setLocation(selectedLocation);
@@ -196,9 +251,17 @@ public class AddPlaceActivity extends BaseActivity {
 //        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         imgBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
 
-        firestoreDB.addPlace(newPlace, baos.toByteArray(), () -> {
-            Toast.makeText(this, "Place successfully added", Toast.LENGTH_SHORT).show();
-            finish();
+        firestoreDB.addPlace(newPlace, baos.toByteArray(), new OnAddItem() {
+            @Override
+            public void onAdd(String docId) {
+                Toast.makeText(AddPlaceActivity.this, "Place successfully added", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(AddPlaceActivity.this, error, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
